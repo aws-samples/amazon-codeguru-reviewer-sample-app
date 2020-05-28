@@ -68,14 +68,13 @@ After a few minutes, CodeGuru Reviewer will issue recommendations on the same Gi
 
 ![Image of pending status](images/pending.png)
 
-
-You can review the recommendations and provide feedback on them using the thumbs up/down icons.
+When the code review is complete and the recommendations appear in GitHub, you can provide feedback on the recommendations using the thumbs up/down icons. Any positive or negative feedback can be used to help improve the performance of CodeGuru Reviewer so that recommendations get better over time. 
 
 ![Image of thumbs up/down icons](images/thumbs_icons.png)
 
 ### 6) Clean up
 
-After you're finished with the demo, clean up your resources:
+After you're finished with this demo, clean up your resources:
 
 1. In your GitHub fork of **amazon-codeguru-reviewer-sample-app**, go to **Settings** and choose **Delete this repository**. Follow the instructions to delete the forked repository.
 1. Delete your clone of the forked repository. For example: `rm -rf amazon-codeguru-reviewer-sample-app`
