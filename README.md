@@ -1,6 +1,6 @@
 # Amazon CodeGuru Reviewer Example App
 
-This application is intended to demonstrate Amazon CodeGuru Reviewer, a service that uses program analysis and machine learning to detect potential defects in code. The implementation of this example is deliberately suboptimal, to showcase CodeGuru Reviewer's ability to provide recommendations. This example code should not be used in production. 
+This application is intended as a test case for Amazon CodeGuru Reviewer, a service that uses program analysis and machine learning to detect potential defects in code. The implementation of this example is intentionally suboptimal, to demonstrate CodeGuru Reviewer's ability to provide recommendations. This example code should not be used in production. 
 
 To get started with CodeGuru Reviewer, follow the steps below.
 
@@ -10,29 +10,42 @@ To get started with CodeGuru Reviewer, follow the steps below.
 
 Log in to GitHub and choose **Fork** to fork this example app to your GitHub account.
 
+![Image of Fork button](images/fork.png)
+
 ### 2) Associate the forked repo
 
 1. Log in to the [CodeGuru dashboard](https://console.aws.amazon.com/codeguru/home?region=us-east-1).
-1. Choose **Reviewer** from the left panel and choose **Associated repositories**.
 1. Choose **Associate repository**.
 1. Make sure **GitHub** is selected and choose **Connect to GitHub**.
 1. To allow CodeGuru Reviewer to access your account, choose **Authorize aws-codesuite**. If prompted, confirm your GitHub password.
 1. Select the **amazon-codeguru-reviewer-sample-app** repository and choose **Associate**.
 
+![Image of Associate view](images/associate.png)
+
 CodeGuru Reviewer is now associated with the repo and listening for pull requests.
 
 ### 3) Push a change to the code
 
-Clone the forked repo:
+Clone the forked repo, replacing **USER_ID** in the URL with your actual user ID:
 
-    git clone https://github.com/<your-userid>/amazon-codeguru-reviewer-sample-app.git
-    
+    git clone https://github.com/USER_ID/amazon-codeguru-reviewer-sample-app.git
+
+You can get the URL by choosing the **Clone or download** button.
+
+![Image of Clone button](images/clone.png)
+
+**Note:** If you access your GitHub repositories using SSH, use the SSH URL instead of the HTTPS URL shown above.
+
 Check out a new branch:
 
     cd amazon-codeguru-reviewer-sample-app
     git checkout -b dev
     
-Copy the Java class at **src/main/java/com/shipmentEvents/handlers/EventHandler.java** into **src/main/java/com/shipmentEvents/demo**. Git and CodeGuru Reviewer will treat this as a new file. 
+Copy the Java class at **src/main/java/com/shipmentEvents/handlers/EventHandler.java** into **src/main/java/com/shipmentEvents/demo**.
+
+    cp src/main/java/com/shipmentEvents/handlers/EventHandler.java src/main/java/com/shipmentEvents/demo/
+
+GitHub and CodeGuru Reviewer will treat this as a new file. 
 
 Push your changes:
 
@@ -43,13 +56,36 @@ Push your changes:
 ### 4) Create a pull request
 
 1. In your forked GitHub repo, choose **New pull request**.
-1. On the left side of the comparison (**base**), select **<your-userid>/amazon-codeguru-reviewer-sample-app** and leave the branch at **master**.
-1. On the right side of the comparison (**compare**), change the branch to **dev**. They should be shown as mergeable ("Able to merge").
+1. On the left side of the comparison (**base**), select **USER_ID/amazon-codeguru-reviewer-sample-app**, where `USER_ID` is your GitHub user ID. Leave the branch at **master**.
+1. On the right side of the comparison (**compare**), change the branch to **dev**. The branches should be shown as mergeable ("Able to merge"). ![Image of compare view](images/compare.png)
 1. Choose **Create pull request** and, again, **Create pull request**.
+
+
 
 ### 5) Review recommendations
 
-CodeGuru Reviewer will issue recommendations on the same GitHub page where the pull request was created. You can review the recommendations and provide feedback on them.
+After a few minutes, CodeGuru Reviewer will issue recommendations on the same GitHub page where the pull request was created. You can check the status of the code review in the **Code reviews** view of the CodeGuru Reviewer Console.
+
+![Image of pending status](images/pending.png)
+
+
+You can review the recommendations and provide feedback on them using the thumbs up/down icons.
+
+![Image of thumbs up/down icons](images/thumbs_icons.png)
+
+### 6) Clean up
+
+After you're finished with the demo, clean up your resources:
+
+1. In your GitHub fork of **amazon-codeguru-reviewer-sample-app**, go to **Settings** and choose **Delete this repository**. Follow the instructions to delete the forked repository.
+1. Delete your clone of the forked repository. For example: `rm -rf amazon-codeguru-reviewer-sample-app`
+1. In the CodeGuru Reviewer Console, select the example repository, choose **Actions**, and then choose **Disassociate repository**.
+
+![Image of disassociate option](images/disassociate.png)
+
+## Learn more
+
+To learn more, see the [Amazon CodeGuru Reviewer User Guide](https://docs.aws.amazon.com/codeguru/latest/reviewer-ug/index.html).
 
 ## License
 
