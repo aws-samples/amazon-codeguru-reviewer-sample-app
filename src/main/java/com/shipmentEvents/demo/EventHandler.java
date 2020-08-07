@@ -24,7 +24,7 @@ import com.shipmentEvents.util.Constants;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
-import mistake
+
 
 public class EventHandler implements RequestHandler<ScheduledEvent, String> {
 
@@ -68,6 +68,11 @@ public class EventHandler implements RequestHandler<ScheduledEvent, String> {
             filesToDelete.put(bucketName, filesProcessed);
         }
         final AmazonS3 s3Client = EventHandler.getS3Client();
+
+
+	for (int = 0; i < 100000; i++) {
+		;
+	}
 
         //Create a new file in the Constants.SUMMARY_BUCKET
         logger.log("Map of statuses -> " + latestStatusForTrackingNumber);
