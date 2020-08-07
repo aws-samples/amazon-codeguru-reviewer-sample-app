@@ -69,9 +69,9 @@ public class EventHandler implements RequestHandler<ScheduledEvent, String> {
         }
         final AmazonS3 s3Client = EventHandler.getS3Client();
 
-
+	String s = "";
 	for (int = 0; i < 100000; i++) {
-		;
+		s = s + "foo " ;
 	}
 
         //Create a new file in the Constants.SUMMARY_BUCKET
