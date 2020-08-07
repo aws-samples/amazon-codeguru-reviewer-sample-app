@@ -58,10 +58,13 @@ public class EventHandler implements RequestHandler<ScheduledEvent, String> {
     }
 
 
+	// defining variable outside to cause a thread safety issue
+
+     Map<String, Pair<Long, String>> latestStatusForTrackingNumber = new HashMap<String, Pair<Long, String>>();
     private void processShipmentUpdates(final LambdaLogger logger) throws InterruptedException {
 
         final List<String> bucketsToProcess = Constants.BUCKETS_TO_PROCESS;
-        final Map<String, Pair<Long, String>> latestStatusForTrackingNumber = new HashMap<String, Pair<Long, String>>();
+       // SIRISH COMMENTED THIS OUT  final Map<String, Pair<Long, String>> latestStatusForTrackingNumber = new HashMap<String, Pair<Long, String>>();
         final Map<String, List<KeyVersion>> filesToDelete = new HashMap<String, List<DeleteObjectsRequest.KeyVersion>>(); 
         for (final String bucketName : bucketsToProcess) {
             final List<KeyVersion> filesProcessed = processEventsInBucket(bucketName, logger, latestStatusForTrackingNumber);
