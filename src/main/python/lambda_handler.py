@@ -4,7 +4,7 @@ import subprocess
 successes = 0
 
 # Dummy AWS Handler to kick off high level processes
-def lambda_handler(source_region, destination_region, credentials):
+ def lambda_handler(source_region, destination_region, credentials):
 
     session = boto3.Session()
 
