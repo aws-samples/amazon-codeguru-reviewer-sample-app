@@ -133,6 +133,9 @@ public class EventHandler implements RequestHandler<ScheduledEvent, String> {
             if (null == lastKnownStatus || lastKnownStatus.getLeft() < timeStamp) {
                 lastKnownStatus = new MutablePair<Long, String>(timeStamp, status);
                 latestStatusForTrackingNumber.put(trackingNumber, lastKnownStatus);
+                if (latestStatusForTrackingNumber.containsKey(trackingNumber)) {
+                   System.out.println("New order verified to be present in hashmap: " + latestStatusForTrackingNumber.get(trackingNumber)); 
+                }
             }
 
             //Add to list of processed files
