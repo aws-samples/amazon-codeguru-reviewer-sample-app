@@ -1,17 +1,12 @@
-void doWork()
-{
-   try
-   {
-       Connection conn = ConnectionFactory.getConnection();
-       PreparedStatement stmt = conn.preparedStatement("some query"); // executes a valid query
-       ResultSet rs = stmt.executeQuery();
-       while(rs.hasNext())
-       {
-          ... process the result set
-       }
-   }
-   catch(SQLException sqlEx)
-   {
-       log(sqlEx);
-   }
+public class MemLeak {
+    public static void main(String[] args) throws InterruptedException {
+        int ITERATIONS=100000;
+        for (int i=0 ; i<ITERATIONS ; i++) {
+            MemLeak.class.getClassLoader().getResourceAsStream("resource.txt");
+        }
+        System.out.println("finished creation of streams, now waiting to be killed");
+
+        Thread.sleep(Long.MAX_VALUE);
+    }
+
 }
