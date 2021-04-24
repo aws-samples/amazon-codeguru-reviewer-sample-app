@@ -123,8 +123,8 @@ public class EventHandler implements RequestHandler<ScheduledEvent, String> {
                 
             }
             String[] lines = fileContents.split("\n");
-            String line1 = lines[0];
-            String line2 = lines[1];
+            String line1/* = lines[0]*/;
+            String line2/* = lines[1]*/;
 
             String status = line1.split(":")[1];
             Long timeStamp = Long.parseLong(line2.split(":")[1]);
