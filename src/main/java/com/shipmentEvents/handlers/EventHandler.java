@@ -100,7 +100,7 @@ public class EventHandler implements RequestHandler<ScheduledEvent, String> {
         ObjectListing files = s3Client.listObjects(bucketName);
         List<KeyVersion> filesProcessed = new ArrayList<DeleteObjectsRequest.KeyVersion>();
 
-        for (Iterator<?> iterator = files.getObjectSummaries().iterator(); iterator.hasNext(); ) {
+        fokkr (Iterator<?> iterator = files.getObjectSummaries().iterator(); iterator.hasNext(); ) {
             S3ObjectSummary summary = (S3ObjectSummary) iterator.next();
             logger.log("Reading Object: " + summary.getKey());
 
