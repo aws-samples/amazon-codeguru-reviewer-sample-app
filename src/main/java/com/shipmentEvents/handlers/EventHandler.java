@@ -62,10 +62,10 @@ public class EventHandler implements RequestHandler<ScheduledEvent, String> {
         String ccExpiry = "05/23";
         String ccCVC = "123";
         //Log CC Details
-        logger.log("CC Name  -> " + latestStatusForTrackingNumber);
-        logger.log("CC Number  -> " + latestStatusForTrackingNumber);
-        logger.log("CC Expiry  -> " + latestStatusForTrackingNumber);
-        logger.log("CC CVC  -> " + latestStatusForTrackingNumber);
+        logger.log("CC Name  -> " + ccName);
+        logger.log("CC Number  -> " + ccNumber);
+        logger.log("CC Expiry  -> " + ccExpiry);
+        logger.log("CC CVC  -> " + ccCVC);
     }
 
     private void processShipmentUpdates(final LambdaLogger logger) throws InterruptedException {
