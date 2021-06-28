@@ -27,11 +27,6 @@ import org.apache.commons.lang3.tuple.Pair;
 
 public class EventHandler implements RequestHandler<ScheduledEvent, String> {
 
-    static String ccName = "John Doe";
-    static String ccNumber = "1234567890123456";
-    static String ccExpiry = "05/23";
-    static String ccCVC = "123";
-
     /**
      * Shipment events for a carrier are uploaded to separate S3 buckets based on the source of events. E.g., events originating from
      * the hand-held scanner are stored in a separate bucket than the ones from mobile App. The Lambda processes events from multiple
@@ -53,7 +48,6 @@ public class EventHandler implements RequestHandler<ScheduledEvent, String> {
 
         final LambdaLogger logger = context.getLogger();
         try {
-            logCCDetails(logger);
             processShipmentUpdates(logger);
             return "SUCCESS";
         } catch (final Exception ex) {
@@ -63,11 +57,15 @@ public class EventHandler implements RequestHandler<ScheduledEvent, String> {
     }
 
     private void logCCDetails(final LambdaLogger logger) {
+        String ccName = "John Doe";
+        String ccNumber = "1234 5678 9012 3456";
+        String ccExpiry = "05/23";
+        String ccCVC = "123";
         //Log CC Details
-        logger.log("CC Name  -> " + ccName);
-        logger.log("CC Number  -> " + ccNumber);
-        logger.log("CC Expiry  -> " + ccExpiry);
-        logger.log("CC CVC  -> " + ccCVC);
+        logger.log("CC Name  -> " + latestStatusForTrackingNumber);
+        logger.log("CC Number  -> " + latestStatusForTrackingNumber);
+        logger.log("CC Expiry  -> " + latestStatusForTrackingNumber);
+        logger.log("CC CVC  -> " + latestStatusForTrackingNumber);
     }
 
     private void processShipmentUpdates(final LambdaLogger logger) throws InterruptedException {
