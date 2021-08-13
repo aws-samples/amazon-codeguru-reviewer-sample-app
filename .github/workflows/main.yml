@@ -1,0 +1,23 @@
+name: CodeGuru Reviewer GitHub Actions Integration
+on: [pull_request, push, schedule]
+jobs:
+  CodeGuru-Reviewer-Actions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: Amazon CodeGuru Reviewer Scanner
+        uses: aws-actions/codeguru-reviewer@v1.1
+        if: ${{ always() }} 
+        with:
+          build_path: target # build artifact(s) directory
+          s3_bucket: 'codeguru-reviewer-ocryan-demo'  # S3 Bucket starting with "codeguru-reviewer-*"
+      - name: Upload review result
+        if: ${{ always() }}
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: codeguru-results.sarif.json
