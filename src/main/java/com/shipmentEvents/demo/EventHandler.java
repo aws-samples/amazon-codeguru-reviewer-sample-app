@@ -1,4 +1,4 @@
-package com.shipmentEvents.handlers;
+package com.shipmentEvents.demo;
 
 import java.time.Duration;
 import java.util.ArrayList;
