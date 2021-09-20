@@ -1,6 +1,5 @@
 package com.shipmentEvents.handlers;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -8,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
@@ -17,8 +17,10 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest.KeyVersion;
+import com.amazonaws.services.s3.model.GetObjectMetadataRequest;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.amazonaws.waiters.*;
 import com.shipmentEvents.util.Constants;
 
 import org.apache.commons.lang3.tuple.MutablePair;
@@ -71,26 +73,15 @@ public class EventHandler implements RequestHandler<ScheduledEvent, String> {
         //Create a new file in the Constants.SUMMARY_BUCKET
         logger.log("Map of statuses -> " + latestStatusForTrackingNumber);
         String summaryUpdateName = Long.toString(System.currentTimeMillis());
-        
-        EventHandler.getS3Client().putObject(Constants.SUMMARY_BUCKET, summaryUpdateName, latestStatusForTrackingNumber.toString());
-        
-        long expirationTime = System.currentTimeMillis() + Duration.ofMinutes(1).toMillis();
-        while(System.currentTimeMillis() < expirationTime) {
-            if (s3Client.doesObjectExist(Constants.SUMMARY_BUCKET, summaryUpdateName)) {
-                break;
-            }
-            logger.log("waiting for file to be created " + summaryUpdateName);
-            Thread.sleep(1000);
-        }
-        
-        // Before we delete the shipment updates make sure the summary update file exists
-        if (EventHandler.getS3Client().doesObjectExist(Constants.SUMMARY_BUCKET, summaryUpdateName)) {
-            deleteProcessedFiles(filesToDelete);
-            logger.log("All updates successfully processed");
-        } else {
+        s3Client.putObject(Constants.SUMMARY_BUCKET, summaryUpdateName, latestStatusForTrackingNumber.toString());
+
+        Waiter<GetObjectMetadataRequest> waiter = s3Client.waiters().objectExists();
+        try {
+            waiter.run(new WaiterParameters<>(new GetObjectMetadataRequest(Constants.SUMMARY_BUCKET, summaryUpdateName)));
+        } catch (WaiterUnrecoverableException | WaiterTimedOutException | AmazonServiceException e) {
             throw new RuntimeException("Failed to write summary status, will be retried in 15 minutes");
         }
-        
+        deleteProcessedFiles(filesToDelete);
     }
 
     private List<KeyVersion> processEventsInBucket(String bucketName, LambdaLogger logger, Map<String, Pair<Long, String>> latestStatusForTrackingNumber) {
