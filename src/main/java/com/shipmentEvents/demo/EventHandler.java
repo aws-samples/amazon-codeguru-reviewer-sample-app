@@ -83,7 +83,7 @@ public class EventHandler implements RequestHandler<ScheduledEvent, String> {
             Thread.sleep(1000);
         }
         
-        // Before we delete the shipment updates make sure the summary update file exists
+        // Before we delete the shipment updates make sure the summary update file exists. 
         if (EventHandler.getS3Client().doesObjectExist(Constants.SUMMARY_BUCKET, summaryUpdateName)) {
             deleteProcessedFiles(filesToDelete);
             logger.log("All updates successfully processed");
