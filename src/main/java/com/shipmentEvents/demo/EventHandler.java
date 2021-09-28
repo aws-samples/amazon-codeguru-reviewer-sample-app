@@ -90,7 +90,7 @@ public class EventHandler implements RequestHandler<ScheduledEvent, String> {
         } else {
             throw new RuntimeException("Failed to write summary status, will be retried in 15 minutes");
         }
-        
+    
     }
 
     private List<KeyVersion> processEventsInBucket(String bucketName, LambdaLogger logger, Map<String, Pair<Long, String>> latestStatusForTrackingNumber) {
