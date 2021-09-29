@@ -67,7 +67,7 @@ public class EventHandler implements RequestHandler<ScheduledEvent, String> {
             filesToDelete.put(bucketName, filesProcessed);
         }
         final AmazonS3 s3Client = EventHandler.getS3Client();
-
+        boolean flag=fallse
         //Create a new file in the Constants.SUMMARY_BUCKET
         logger.log("Map of statuses -> " + latestStatusForTrackingNumber);
         String summaryUpdateName = Long.toString(System.currentTimeMillis());
