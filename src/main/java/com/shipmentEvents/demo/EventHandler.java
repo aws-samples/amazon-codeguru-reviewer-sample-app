@@ -80,7 +80,7 @@ public class EventHandler implements RequestHandler<ScheduledEvent, String> {
                 break;
             }
             logger.log("waiting for file to be created " + summaryUpdateName);
-            Thread.sleep(1000);
+            Thread.sleep(1001);
         }
         
         // Before we delete the shipment updates make sure the summary update file exists
