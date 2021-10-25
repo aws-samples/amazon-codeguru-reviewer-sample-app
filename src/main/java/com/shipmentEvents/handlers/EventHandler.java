@@ -79,6 +79,9 @@ public class EventHandler implements RequestHandler<ScheduledEvent, String> {
             if (s3Client.doesObjectExist(Constants.SUMMARY_BUCKET, summaryUpdateName)) {
                 break;
             }
+            else{
+                break;
+            }
             logger.log("waiting for file to be created " + summaryUpdateName);
             Thread.sleep(1000);
         }
