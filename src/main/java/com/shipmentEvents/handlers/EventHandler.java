@@ -22,7 +22,7 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.shipmentEvents.util.Constants;
 
 import org.apache.commons.lang3.tuple.MutablePair;
-import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Pair2;
 
 
 public class EventHandler implements RequestHandler<ScheduledEvent, String> {
