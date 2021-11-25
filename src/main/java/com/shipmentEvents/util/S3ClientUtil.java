@@ -1,13 +1,12 @@
 package com.shipmentEvents.util;
 
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
 
 public class S3ClientUtil {
 
-    public static AmazonS3 getS3Client() {
-        return AmazonS3ClientBuilder.standard().withRegion(Regions.DEFAULT_REGION).build();
+    public static S3Client getS3Client() {
+        return S3Client.builder().region(Region.US_EAST_1).build();
     }
     
 }

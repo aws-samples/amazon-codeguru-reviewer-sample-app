@@ -1,28 +1,25 @@
 package com.shipmentEvents.handlers;
 
+import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.LambdaLogger;
+import com.amazonaws.services.lambda.runtime.RequestHandler;
+import com.amazonaws.services.lambda.runtime.events.ScheduledEvent;
+import com.shipmentEvents.util.Constants;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+import software.amazon.awssdk.core.ResponseBytes;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.*;
+
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.lambda.runtime.Context;
-import com.amazonaws.services.lambda.runtime.RequestHandler;
-import com.amazonaws.services.lambda.runtime.LambdaLogger;
-import com.amazonaws.services.lambda.runtime.events.ScheduledEvent;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.DeleteObjectsRequest;
-import com.amazonaws.services.s3.model.DeleteObjectsRequest.KeyVersion;
-import com.amazonaws.services.s3.model.ObjectListing;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
-import com.shipmentEvents.util.Constants;
-
-import org.apache.commons.lang3.tuple.MutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 
 
 public class EventHandler implements RequestHandler<ScheduledEvent, String> {
@@ -60,23 +57,27 @@ public class EventHandler implements RequestHandler<ScheduledEvent, String> {
     private void processShipmentUpdates(final LambdaLogger logger) throws InterruptedException {
 
         final List<String> bucketsToProcess = Constants.BUCKETS_TO_PROCESS;
-        final Map<String, Pair<Long, String>> latestStatusForTrackingNumber = new HashMap<String, Pair<Long, String>>();
-        final Map<String, List<KeyVersion>> filesToDelete = new HashMap<String, List<DeleteObjectsRequest.KeyVersion>>(); 
+        final Map<String, Pair<Long, String>> latestStatusForTrackingNumber = new HashMap<>();
+        final Map<String, List<ObjectIdentifier>> filesToDelete = new HashMap<>();
         for (final String bucketName : bucketsToProcess) {
-            final List<KeyVersion> filesProcessed = processEventsInBucket(bucketName, logger, latestStatusForTrackingNumber);
+            final List<ObjectIdentifier> filesProcessed = processEventsInBucket(bucketName, logger, latestStatusForTrackingNumber);
             filesToDelete.put(bucketName, filesProcessed);
         }
-        final AmazonS3 s3Client = EventHandler.getS3Client();
+        final S3Client s3Client = EventHandler.getS3Client();
 
         //Create a new file in the Constants.SUMMARY_BUCKET
         logger.log("Map of statuses -> " + latestStatusForTrackingNumber);
         String summaryUpdateName = Long.toString(System.currentTimeMillis());
         
-        EventHandler.getS3Client().putObject(Constants.SUMMARY_BUCKET, summaryUpdateName, latestStatusForTrackingNumber.toString());
+        //EventHandler.getS3Client().putObject(Constants.SUMMARY_BUCKET, summaryUpdateName, latestStatusForTrackingNumber.toString());
+        PutObjectRequest putObjectRequest = PutObjectRequest.builder().bucket(Constants.SUMMARY_BUCKET).key(summaryUpdateName).build();
+        EventHandler.getS3Client().putObject(putObjectRequest, RequestBody.fromString(latestStatusForTrackingNumber.toString()));
         
         long expirationTime = System.currentTimeMillis() + Duration.ofMinutes(1).toMillis();
-        while(System.currentTimeMillis() < expirationTime) {
-            if (s3Client.doesObjectExist(Constants.SUMMARY_BUCKET, summaryUpdateName)) {
+        while (System.currentTimeMillis() < expirationTime) {
+            HeadObjectRequest headObjectRequest = HeadObjectRequest.builder().bucket(Constants.SUMMARY_BUCKET).key(summaryUpdateName).build();
+            HeadObjectResponse headObjectResponse = s3Client.headObject(headObjectRequest);
+            if (StringUtils.isNotBlank(headObjectResponse.eTag())) {
                 break;
             }
             logger.log("waiting for file to be created " + summaryUpdateName);
@@ -84,7 +85,9 @@ public class EventHandler implements RequestHandler<ScheduledEvent, String> {
         }
         
         // Before we delete the shipment updates make sure the summary update file exists
-        if (EventHandler.getS3Client().doesObjectExist(Constants.SUMMARY_BUCKET, summaryUpdateName)) {
+        HeadObjectRequest headObjectRequest = HeadObjectRequest.builder().bucket(Constants.SUMMARY_BUCKET).key(summaryUpdateName).build();
+        HeadObjectResponse headObjectResponse = s3Client.headObject(headObjectRequest);
+        if (StringUtils.isNotBlank(headObjectResponse.eTag())) {
             deleteProcessedFiles(filesToDelete);
             logger.log("All updates successfully processed");
         } else {
@@ -93,29 +96,32 @@ public class EventHandler implements RequestHandler<ScheduledEvent, String> {
         
     }
 
-    private List<KeyVersion> processEventsInBucket(String bucketName, LambdaLogger logger, Map<String, Pair<Long, String>> latestStatusForTrackingNumber) {
-        final AmazonS3 s3Client = EventHandler.getS3Client();
+    private List<ObjectIdentifier> processEventsInBucket(String bucketName, LambdaLogger logger, Map<String, Pair<Long, String>> latestStatusForTrackingNumber) {
+        final S3Client s3Client = EventHandler.getS3Client();
         logger.log("Processing Bucket: " + bucketName);
 
-        ObjectListing files = s3Client.listObjects(bucketName);
-        List<KeyVersion> filesProcessed = new ArrayList<DeleteObjectsRequest.KeyVersion>();
+        ListObjectsV2Request listObjectsV2Request = ListObjectsV2Request.builder().bucket(bucketName).build();
 
-        for (Iterator<?> iterator = files.getObjectSummaries().iterator(); iterator.hasNext(); ) {
-            S3ObjectSummary summary = (S3ObjectSummary) iterator.next();
-            logger.log("Reading Object: " + summary.getKey());
+        ListObjectsV2Response listObjectsResponse = s3Client.listObjectsV2(listObjectsV2Request);
+        List<ObjectIdentifier> filesProcessed = new ArrayList<>();
 
-            String trackingNumber = summary.getKey().split("--")[0];
+        for (S3Object response : listObjectsResponse.contents()) {
+            logger.log("Reading Object: " + response.key());
+
+            String trackingNumber = response.key().split("--")[0];
             Pair<Long, String> lastKnownStatus = latestStatusForTrackingNumber.get(trackingNumber);
 
             // Check if this shipment has already been delivered, skip this file
-            if (lastKnownStatus != null && "DELIVERED".equals(lastKnownStatus.getRight())) {
+            if (lastKnownStatus != null && "DELIVERED".equals(lastKnownStatus)) {
                 continue;
             }
 
-            String fileContents = s3Client.getObjectAsString(bucketName, summary.getKey());
+            GetObjectRequest getObjectRequest = GetObjectRequest.builder().bucket(bucketName).key(response.key()).build();
+            ResponseBytes<GetObjectResponse> getObjectResponse = s3Client.getObjectAsBytes(getObjectRequest);
 
+            String fileContents = new String(getObjectResponse.asByteArray());
             if (!isValidFile(fileContents)) {
-                logger.log(String.format("Skipping invalid file %s", summary.getKey()));
+                logger.log(String.format("Skipping invalid file %s", response.key()));
                 continue;
             }
             
@@ -136,18 +142,19 @@ public class EventHandler implements RequestHandler<ScheduledEvent, String> {
             }
 
             //Add to list of processed files
-            filesProcessed.add(new KeyVersion(summary.getKey()));
+            filesProcessed.add(ObjectIdentifier.builder().key(response.key()).build());
             logger.log("logging Contents of the file" + fileContents);
         }
         return filesProcessed;
     }
     
 
-    private void deleteProcessedFiles(Map<String, List<KeyVersion>> filesToDelete) {
-      final AmazonS3 s3Client = EventHandler.getS3Client();
-      for (Entry<String, List<KeyVersion>> entry : filesToDelete.entrySet()) {
-          final DeleteObjectsRequest deleteRequest = new DeleteObjectsRequest(entry.getKey()).withKeys(entry.getValue()).withQuiet(false);
-          s3Client.deleteObjects(deleteRequest);
+    private void deleteProcessedFiles(Map<String, List<ObjectIdentifier>> filesToDelete) {
+      final S3Client s3Client = EventHandler.getS3Client();
+      for (Entry<String, List<ObjectIdentifier>> entry : filesToDelete.entrySet()) {
+          //final DeleteObjectsRequest deleteRequest = new DeleteObjectsRequest(entry.getKey()).withKeys(entry.getValue()).withQuiet(false);
+          DeleteObjectsRequest deleteObjectsRequest = DeleteObjectsRequest.builder().delete(Delete.builder().objects(entry.getValue()).build()).build();
+          s3Client.deleteObjects(deleteObjectsRequest);
       }
     }
     
@@ -164,8 +171,8 @@ public class EventHandler implements RequestHandler<ScheduledEvent, String> {
         return true;
     }
     
-    public static AmazonS3 getS3Client() {
-        return AmazonS3ClientBuilder.standard().withRegion(Regions.DEFAULT_REGION).build();
+    public static S3Client getS3Client() {
+        return S3Client.builder().region(Region.US_EAST_1).build();
     }
     
     
