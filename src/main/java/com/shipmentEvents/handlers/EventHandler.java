@@ -1,5 +1,6 @@
 package com.shipmentEvents.handlers;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,6 +8,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.lambda.runtime.Context;
@@ -56,6 +61,12 @@ public class EventHandler implements RequestHandler<ScheduledEvent, String> {
         }
     }
 
+    public String weakMessageEncryption(String message, String key) throws Exception {
+        Cipher cipher = Cipher.getInstance("RSA");
+        SecretKey secretKey = new SecretKeySpec(key.getBytes(), "AES");
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+        return new String(cipher.doFinal(message.getBytes()), StandardCharsets.UTF_8);
+    }
 
     private void processShipmentUpdates(final LambdaLogger logger) throws InterruptedException {
 
