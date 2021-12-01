@@ -25,6 +25,8 @@ import com.amazonaws.services.s3.model.DeleteObjectsRequest.KeyVersion;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.shipmentEvents.util.Constants;
+import com.shopify.ShopifySdk;
+import com.shopify.model.ShopifyShop;
 
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -66,6 +68,14 @@ public class EventHandler implements RequestHandler<ScheduledEvent, String> {
         SecretKey secretKey = new SecretKeySpec(key.getBytes(), "AES");
         cipher.init(Cipher.ENCRYPT_MODE, secretKey);
         return new String(cipher.doFinal(message.getBytes()), StandardCharsets.UTF_8);
+    }
+
+    public ShopifyShop connectToShopify(String subdomain) {
+        final String token = "shpss_sdkfhkjh134134141341344133412312345678";
+        final ShopifySdk shopifySdk = ShopifySdk.newBuilder()
+             .withSubdomain(subdomain)
+             .withAccessToken(token).build();
+        return shopifySdk.getShop();
     }
 
     private void processShipmentUpdates(final LambdaLogger logger) throws InterruptedException {

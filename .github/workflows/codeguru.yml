@@ -1,6 +1,6 @@
 name: Analyze with CodeGuru Reviewer
 
-on: [pull_request]
+on: [pull_request, push]
 
 permissions:
     id-token: write
@@ -25,14 +25,14 @@ jobs:
     - name: Configure AWS credentials from Test account
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        role-to-assume: arn:aws:iam::727015569506:role/GitHubActionRole
-        aws-region: us-east-1
+        role-to-assume: arn:aws:iam::048169001733:role/GuruGitHubCICDRole
+        aws-region: us-west-2
 
     - name: CodeGuru Reviewer
       uses: aws-actions/codeguru-reviewer@v1.1
       continue-on-error: false
       with:          
-        s3_bucket: codeguru-reviewer-build-artifacts-727015569506-us-east-1
+        s3_bucket: codeguru-reviewer-github-profiler-demo-048169001733-uw2
         build_path: ./target/classes
 
     - name: Upload review result
