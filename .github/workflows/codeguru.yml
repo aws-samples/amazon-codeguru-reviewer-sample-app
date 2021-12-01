@@ -1,6 +1,6 @@
 name: Analyze with CodeGuru Reviewer
 
-on: [push, pull_request]
+on: [pull_request]
 
 permissions:
     id-token: write
@@ -19,11 +19,11 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
-    - name: Build gradle package
+    - name: Build project
       run: mvn compile -DskipTests
 
     - name: Configure AWS credentials from Test account
-      uses: aws-actions/configure-aws-credentials@master
+      uses: aws-actions/configure-aws-credentials@v1
       with:
         role-to-assume: arn:aws:iam::727015569506:role/GitHubActionRole
         aws-region: us-east-1
