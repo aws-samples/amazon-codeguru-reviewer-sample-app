@@ -1,6 +1,6 @@
 name: Analyze with CodeGuru Reviewer
 
-on: [pull_request, push]
+on: [push]
 
 permissions:
     id-token: write
@@ -34,6 +34,12 @@ jobs:
       with:          
         s3_bucket: codeguru-reviewer-github-profiler-demo-048169001733-uw2
         build_path: ./target/classes
+
+    - name: Store SARIF file
+      uses: actions/upload-artifact@v2
+      with:
+        name: SARIF_recommendations
+        path: ./codeguru-results.sarif.json
 
     - name: Upload review result
       uses: github/codeql-action/upload-sarif@v1
