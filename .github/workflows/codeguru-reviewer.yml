@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   build:
-    name: Clone your repository
+    name: Analyze with CodeGuru Reviewer
     runs-on: ubuntu-latest
     steps:
 
