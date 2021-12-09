@@ -1,5 +1,6 @@
 package com.shipmentEvents.handlers;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,6 +8,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.lambda.runtime.Context;
@@ -20,6 +25,8 @@ import com.amazonaws.services.s3.model.DeleteObjectsRequest.KeyVersion;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.shipmentEvents.util.Constants;
+import com.shopify.ShopifySdk;
+import com.shopify.model.ShopifyShop;
 
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -52,10 +59,24 @@ public class EventHandler implements RequestHandler<ScheduledEvent, String> {
             return "SUCCESS";
         } catch (final Exception ex) {
             logger.log(String.format("Failed to process shipment Updates in %s due to %s", scheduledEvent.getAccount(), ex.getMessage()));
-            throw new RuntimeException(ex);
+            throw new RuntimeException("Hiding the exception");
         }
     }
 
+    public String weakMessageEncryption(String message, String key) throws Exception {
+        Cipher cipher = Cipher.getInstance("RSA");
+        SecretKey secretKey = new SecretKeySpec(key.getBytes(), "AES");
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+        return new String(cipher.doFinal(message.getBytes()), StandardCharsets.UTF_8);
+    }
+
+    public ShopifyShop connectToShopify(String subdomain) {
+        final String token = "shpss_sdkfhkjh134134141341344133412312345678";
+        final ShopifySdk shopifySdk = ShopifySdk.newBuilder()
+             .withSubdomain(subdomain)
+             .withAccessToken(token).build();
+        return shopifySdk.getShop();
+    }
 
     private void processShipmentUpdates(final LambdaLogger logger) throws InterruptedException {
 
