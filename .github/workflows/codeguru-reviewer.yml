@@ -9,32 +9,40 @@ permissions:
 
 jobs:
   build:
-    name: Clone your repository
+    name: Analyze with CodeGuru Reviewer
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
 
-    - name: Configure AWS credentials from Test account
+    - name: Assume IAM Role
+      continue-on-error: true
       uses: aws-actions/configure-aws-credentials@v1
+      id: iam-role
       with:
         role-to-assume: arn:aws:iam::048169001733:role/GuruGitHubCICDRole
         aws-region: us-west-2
 
+    - uses: actions/checkout@v2
+      if: steps.iam-role.outcome == 'success'
+      with:
+        fetch-depth: 0
+
     - name: CodeGuru Reviewer
+      if: steps.iam-role.outcome == 'success'
+      id: codeguru
       uses: aws-actions/codeguru-reviewer@v1.1
       continue-on-error: false
       with:          
         s3_bucket: codeguru-reviewer-github-profiler-demo-048169001733-uw2
 
     - name: Store SARIF file
+      if: steps.iam-role.outcome == 'success' && steps.codeguru.outcome == 'success'
       uses: actions/upload-artifact@v2
       with:
         name: SARIF_recommendations
         path: ./codeguru-results.sarif.json
 
     - name: Upload review result
+      if: steps.iam-role.outcome == 'success' && steps.codeguru.outcome == 'success'
       uses: github/codeql-action/upload-sarif@v1
       with:
         sarif_file: codeguru-results.sarif.json
