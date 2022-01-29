@@ -1,6 +1,6 @@
 name: Analyze with CodeGuru Reviewer
 
-on: [push]
+on: [push, workflow_dispatch]
 
 permissions:
     id-token: write
@@ -13,6 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Configure AWS credentials
+      id: iam-role
       continue-on-error: true
       uses: aws-actions/configure-aws-credentials@v1
       with:
