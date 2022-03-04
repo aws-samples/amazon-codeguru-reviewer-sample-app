@@ -27,7 +27,7 @@ jobs:
       run: mvn -B package --file pom.xml
 
     - name: Checkout repository
-      uses: actions/checkout@V2
+      uses: actions/checkout@v2
       with:
          fetch-depth: 0
 
@@ -47,4 +47,3 @@ jobs:
 #      with:
 #        name: SARIF_recommendations
 #        path: ./codeguru-results.sarif.json
-
