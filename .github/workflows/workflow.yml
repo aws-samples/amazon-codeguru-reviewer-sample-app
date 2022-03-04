@@ -5,7 +5,6 @@ on:
  - pull_request
  - workflow_dispatch # This allows manual triggering of the action through the GitHub UI.
 
-
 jobs:
   build:
     name: Analyze with CodeGuru Reviewer
@@ -13,7 +12,7 @@ jobs:
    
     steps:
     - name: Checkout repository
-      uses: actions/checkout@V3
+      uses: actions/checkout@V2
       with:
          fetch-depth: 0
     - name: Configure AWS credentials
