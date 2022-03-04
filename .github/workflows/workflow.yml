@@ -1,0 +1,51 @@
+name: Analyze with CodeGuru Reviewer
+
+on: 
+ - push
+ - pull_request
+ - workflow_dispatch # This allows manual triggering of the action through the GitHub UI.
+
+jobs:
+  build:
+    name: Analyze with CodeGuru Reviewer
+    runs-on: ubuntu-latest
+   
+    steps:
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-west-2
+    
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      with:
+         fetch-depth: 0
+
+    - name: Set up JDK 
+      uses: actions/setup-java@v1
+      with:
+        java-version: 1.8
+
+    - name: Build project with maven
+      run: mvn compile -DskipTests
+
+
+    - name: CodeGuru Reviewer
+      uses: aws-actions/codeguru-reviewer@v1.1
+      with:          
+        build_path: ./target/classes
+        s3_bucket: codeguru-reviewer-aditya
+
+#    - name: Store SARIF file
+#      uses: actions/upload-artifact@v2
+#      with:
+#        name: SARIF_recommendations
+#        path: ./codeguru-results.sarif.json
+
+    - name: Upload review result
+      uses: github/codeql-action/upload-sarif@v1
+      with:
+        sarif_file: codeguru-results.sarif.json
+
