@@ -11,10 +11,6 @@ jobs:
     runs-on: ubuntu-latest
    
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@V2
-      with:
-         fetch-depth: 0
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
@@ -29,6 +25,11 @@ jobs:
 
     - name: Build project with maven
       run: mvn -B package --file pom.xml
+
+    - name: Checkout repository
+      uses: actions/checkout@V2
+      with:
+         fetch-depth: 0
 
     - name: CodeGuru Reviewer
       uses: aws-actions/codeguru-reviewer@v1.1
