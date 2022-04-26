@@ -23,7 +23,8 @@ def lambda_handler(source_region, destination_region, credentials):
                              aws_session_token=credentials['SessionToken'])
         topic_arns = list_sns(sns)
         print(len(topic_arns))
-
+    while True:
+        print("something")
     # Sync Source DDB to Destination Region
     CLIENT_NAME = 'dynamodb'
     source_ddb = session.client(CLIENT_NAME, region_name=source_region, aws_access_key_id=credentials['AccessKeyId'],
