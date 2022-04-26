@@ -54,13 +54,13 @@ def list_sns(sns, topics=[]):
 
 
 # Infinite loop because a list is modified while being iterated over, Indices are not updated.
-'''def infinite_loop():
+def infinite_loop():
     words = ['aws', 'amazon', 'codeguru']
     for w in words:
         if len(w) > 4:
             words.insert(0, w)
     return words
-    '''
+
 
 # Prefer DefaultDict over setDefult
 def setdefault_example():
