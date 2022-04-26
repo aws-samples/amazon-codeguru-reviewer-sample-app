@@ -21,8 +21,6 @@ public class Main {
         cipher.init(Cipher.ENCRYPT_MODE, secretKey);
         System.out.println(String(cipher.doFinal(message.getBytes()), StandardCharsets.UTF_8));
         System.out.println(String("Just a sample edit"));
-        System.out.println(String("One more sample edit"));
-        System.out.println(String("One other sample edit"));
     }
     
 }
