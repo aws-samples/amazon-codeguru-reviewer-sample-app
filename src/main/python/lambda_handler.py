@@ -59,7 +59,7 @@ def infinite_loop():
     for w in words:
         if len(w) > 4:
             words.insert(0, w)
-    return words
+    return words 
 
 
 # Prefer DefaultDict over setDefult
