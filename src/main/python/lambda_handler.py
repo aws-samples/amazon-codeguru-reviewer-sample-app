@@ -7,7 +7,11 @@ successes = 0
 def lambda_handler(source_region, destination_region, credentials):
 
     session = boto3.Session()
-
+    # open the file using open() function
+    file = open("sample.txt", 'w')
+   
+    # Overwrite the file
+    file.write(" This is a sample file !")
     # Load Records into KINESIS
     CLIENT_NAME = 'kinesis'
     kinesis = session.client(CLIENT_NAME, region_name=source_region, aws_access_key_id=credentials,
@@ -109,3 +113,4 @@ def save_kinesis_record(kinesis_client, record):
         kinesis_client.put_records(record)
     except:
         raise
+
