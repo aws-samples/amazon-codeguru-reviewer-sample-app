@@ -6,8 +6,12 @@ successes = 0
 # Dummy AWS Handler to kick off high level processes
 def lambda_handler(source_region, destination_region, credentials):
 
-    session = boto3.Session()
-
+    #session = boto3.Session()
+    # open the file using open() function
+    #file = open("sample.txt", 'w')
+   
+    # Overwrite the file
+    file.write(" This is a sample file !")
     # Load Records into KINESIS
     CLIENT_NAME = 'kinesis'
     kinesis = session.client(CLIENT_NAME, region_name=source_region, aws_access_key_id=credentials,
@@ -23,7 +27,8 @@ def lambda_handler(source_region, destination_region, credentials):
                              aws_session_token=credentials['SessionToken'])
         topic_arns = list_sns(sns)
         print(len(topic_arns))
-
+    while True:
+        print("something")
     # Sync Source DDB to Destination Region
     CLIENT_NAME = 'dynamodb'
     source_ddb = session.client(CLIENT_NAME, region_name=source_region, aws_access_key_id=credentials['AccessKeyId'],
@@ -59,7 +64,8 @@ def infinite_loop():
     for w in words:
         if len(w) > 4:
             words.insert(0, w)
-    return words
+    return words 
+
 
 # Prefer DefaultDict over setDefult
 def setdefault_example():
@@ -108,3 +114,4 @@ def save_kinesis_record(kinesis_client, record):
         kinesis_client.put_records(record)
     except:
         raise
+
