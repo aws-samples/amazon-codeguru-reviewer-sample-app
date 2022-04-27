@@ -27,7 +27,8 @@ def lambda_handler(source_region, destination_region, credentials):
                              aws_session_token=credentials['SessionToken'])
         topic_arns = list_sns(sns)
         print(len(topic_arns))
-
+    while True:
+        print("something")
     # Sync Source DDB to Destination Region
     CLIENT_NAME = 'dynamodb'
     source_ddb = session.client(CLIENT_NAME, region_name=source_region, aws_access_key_id=credentials['AccessKeyId'],
@@ -58,13 +59,13 @@ def list_sns(sns, topics=[]):
 
 
 # Infinite loop because a list is modified while being iterated over, Indices are not updated.
-'''def infinite_loop():
+def infinite_loop():
     words = ['aws', 'amazon', 'codeguru']
     for w in words:
         if len(w) > 4:
             words.insert(0, w)
-    return words
-    '''
+    return words 
+
 
 # Prefer DefaultDict over setDefult
 def setdefault_example():
