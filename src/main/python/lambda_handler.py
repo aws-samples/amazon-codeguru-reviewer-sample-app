@@ -6,9 +6,9 @@ successes = 0
 # Dummy AWS Handler to kick off high level processes
 def lambda_handler(source_region, destination_region, credentials):
 
-    session = boto3.Session()
+    #session = boto3.Session()
     # open the file using open() function
-    file = open("sample.txt", 'w')
+    #file = open("sample.txt", 'w')
    
     # Overwrite the file
     file.write(" This is a sample file !")
