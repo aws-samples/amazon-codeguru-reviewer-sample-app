@@ -7,7 +7,7 @@ import java.io.InputStream;
 import com.amazonaws.util.IOUtils;
 
 /**
- * Even though this file contains weak crypto issues, CodeGuru Reviewer will not
+ * Even though this file contains file syntax issues, CodeGuru Reviewer will not
  * report any issues in it, because it has been excluded in aws-codeguru-reviewer.yml.
  * 
  * For more information, see the Amazon CodeGuru Reviewer User Guide:
@@ -15,7 +15,6 @@ import com.amazonaws.util.IOUtils;
  */
 public class FileSyntaxError {
 
-    // {fact rule=file-syntax-error@v1.0 defects=1}
     public void getObjectContentNoncompliant(AmazonS3 amazonS3Client, String bucketName, String key) throws IOException {
         final S3Object s3object = amazonS3Client.getObject(bucketName, key);
         // Noncompliant: the statement is incomplete and is missing ";" at the end.
@@ -23,15 +22,11 @@ public class FileSyntaxError {
         InputStream reportStream = s3object.getObjectContent();
         IOUtils.toString(reportStream);
     }
-    // {/fact}
 
-    // {fact rule=file-syntax-error@v1.0 defects=0}
     public void getObjectContentCompliant(AmazonS3 amazonS3Client, String bucketName, String key) throws IOException {
         final S3Object s3object = amazonS3Client.getObject(bucketName, key);
-        // Compliant: the statement is complete and ends with a ";".
         System.out.println(s3object.getObjectMetadata());
         InputStream reportStream = s3object.getObjectContent();
         IOUtils.toString(reportStream);
     }
-    // {/fact}
 }
