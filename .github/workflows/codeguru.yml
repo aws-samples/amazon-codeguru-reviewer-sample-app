@@ -19,8 +19,8 @@ jobs:
       continue-on-error: true
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        role-to-assume: arn:aws:iam::048169001733:role/GuruGitHubCICDRole
-        aws-region: us-west-2
+        role-to-assume: arn:aws:iam::979439380460:role/GitHubActionsCodeGuruReviewerRole
+        aws-region: eu-west-1
     
     - uses: actions/checkout@v2
       if: steps.iam-role.outcome == 'success'
@@ -40,7 +40,7 @@ jobs:
       if: steps.iam-role.outcome == 'success'
       continue-on-error: false
       with:          
-        s3_bucket: codeguru-reviewer-github-profiler-demo-048169001733-uw2
+        s3_bucket: codeguru-reviewer-20220411-workshop
         build_path: ./target/classes
 
     - name: Store SARIF file
