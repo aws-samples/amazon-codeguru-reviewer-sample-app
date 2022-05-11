@@ -189,6 +189,13 @@ public class EventHandler implements RequestHandler<ScheduledEvent, String> {
         return AmazonS3ClientBuilder.standard().withRegion(Regions.DEFAULT_REGION).build();
     }
     
+    public ModelAndView inputSanitizationNonCompliant(@RequestParam String favoriteColor) {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("jsp/example.jsp");
+        // Noncompliant: user-supplied parameter might contain malicious content.
+        modelAndView.addObject("preferredColor", favoriteColor);
+        return modelAndView;
+    }
     
 }
 
