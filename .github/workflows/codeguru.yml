@@ -2,8 +2,11 @@ name: hogehoge codeguru review
 
 name: pull-stg
 on:
- - push
- - workflow_dispatch # This allows manual triggering of the action through the GitHub UI.
+  pull_request:
+    branches:
+      - master
+    paths-ignore:
+      - README.md
 
 jobs:
   review:
