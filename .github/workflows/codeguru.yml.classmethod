@@ -1,12 +1,7 @@
 name: hogehoge codeguru review
 
-name: pull-stg
 on:
-  pull_request:
-    branches:
-      - master
-    paths-ignore:
-      - README.md
+  workflow_dispatch:
 
 jobs:
   review:
