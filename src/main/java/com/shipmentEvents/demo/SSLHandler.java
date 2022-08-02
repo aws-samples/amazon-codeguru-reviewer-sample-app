@@ -14,7 +14,7 @@ import javax.net.ssl.X509TrustManager;
 public class SSLHandler {
     private SSLSocketFactory defaultSslSocketFactory(X509TrustManager trustManager)
             throws NoSuchAlgorithmException, KeyManagementException {
-            SSLContext sslContext = SSLContext.getInstance("TLS");
+            SSLContext sslContext = SSLContext.getInstance("SSL");
             // 第三个参数不能为null，需要补充安全随机数
             sslContext.init(null, new TrustManager[] { trustManager }, null);
             return sslContext.getSocketFactory();
