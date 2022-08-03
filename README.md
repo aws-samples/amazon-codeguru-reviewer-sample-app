@@ -1,6 +1,6 @@
-# Amazon CodeGuru Reviewer example app (test)
+# Amazon CodeGuru Reviewer example app (test) (test)
 
-This application is intended as a test case for Amazon CodeGuru Reviewer, a service that uses program analysis and machine learning to detect potential defects in code. The implementation of this example is intentionally suboptimal to demonstrate the ability of CodeGuru Reviewer to provide recommendations. You should not use this example code in production. 
+This application is intended as a test case for Amazon CodeGuru Reviewer, a service that uses program analysis and machine learning to detect potential defects in code. The implementation of this example is intentionally suboptimal to demonstrate the ability of CodeGuru Reviewer to provide recommendations. You should not use this example code in production.
 
 Note: For testing recommendations from different languages please switch to the relevant branch (Example: python).
 
@@ -42,19 +42,19 @@ Check out a new branch.
 
     cd amazon-codeguru-reviewer-sample-app
     git checkout -b dev
-    
+
 Copy the Java class at **src/main/java/com/shipmentEvents/handlers/EventHandler.java** into **src/main/java/com/shipmentEvents/demo**.
 
     cp src/main/java/com/shipmentEvents/handlers/EventHandler.java src/main/java/com/shipmentEvents/demo/
 
-GitHub and CodeGuru Reviewer will treat this as a new file. 
+GitHub and CodeGuru Reviewer will treat this as a new file.
 
 Push your changes.
 
     git add --all
     git commit -m 'new demo file'
     git push --set-upstream origin dev
-    
+
 ### Step 4: Create a pull request
 
 1. In your forked GitHub repo, choose **New pull request**.
@@ -62,15 +62,13 @@ Push your changes.
 1. On the right side of the comparison (**compare**), change the branch to **dev**. The branches should be showing as **Able to merge**. ![Image of compare view](images/compare.png)
 1. Choose **Create pull request** and, again, **Create pull request**.
 
-
-
 ### Step 5: Review recommendations
 
 After a few minutes, CodeGuru Reviewer will issue recommendations on the same GitHub page where the pull request was created. You can check the status of the code review in the **Code reviews** view of the CodeGuru Reviewer console.
 
 ![Image of pending status](images/pending.png)
 
-When the code review is complete and the recommendations appear in GitHub, you can provide feedback on the recommendations using the thumbs up or thumbs down icon. Any positive or negative feedback can be used to help improve the performance of CodeGuru Reviewer so that recommendations get better over time. 
+When the code review is complete and the recommendations appear in GitHub, you can provide feedback on the recommendations using the thumbs up or thumbs down icon. Any positive or negative feedback can be used to help improve the performance of CodeGuru Reviewer so that recommendations get better over time.
 
 ![Image of thumbs up/down icons](images/thumbs_icons.png)
 
@@ -91,4 +89,3 @@ For more information about how to use CodeGuru Reviewer, see the [Amazon CodeGur
 ## License
 
 This library is licensed under the MIT-0 License. See the LICENSE file.
-
