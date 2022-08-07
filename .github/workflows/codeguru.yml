@@ -16,10 +16,10 @@ jobs:
     steps:
     - name: Configure AWS credentials
       id: iam-role
-      continue-on-error: true
+      continue-on-error: false
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        role-to-assume: arn:aws:iam::632161794143:role/CodeGuruReviewerGithubActionsOIDCRole
+        role-to-assume: arn:aws:iam::632161794143:role/OIDCgithub-Role-1TPDCXLLTEOWR
         aws-region: us-west-2
     
     - uses: actions/checkout@v2
