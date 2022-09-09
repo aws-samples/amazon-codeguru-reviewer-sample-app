@@ -42,9 +42,13 @@ jobs:
       with:          
         s3_bucket: codeguru-reviewer-githubactions-awsbin
         build_path: ./target/classes
-    - name: Rename the file
-      run: cp codeguru-results.sarif.json codeguru-results.sarif
+        
+    - name: Rename file 
+      run: mv codeguru-results.sarif.json codeguru-results.sarif
 
+    - name: Delete file 
+      run: rm -f codeguru-results.sarif.json    
+    
     - name: Store SARIF file
       if: steps.iam-role.outcome == 'success'
       uses: actions/upload-artifact@v2
