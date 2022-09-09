@@ -42,19 +42,21 @@ jobs:
       with:          
         s3_bucket: codeguru-reviewer-githubactions-awsbin
         build_path: ./target/classes
+    - name: Rename the file
+      run: cp codeguru-results.sarif.json codeguru-results.sarif
 
     - name: Store SARIF file
       if: steps.iam-role.outcome == 'success'
       uses: actions/upload-artifact@v2
       with:
         name: SARIF_recommendations
-        path: ./codeguru-results.sarif.json
+        path: ./codeguru-results.sarif
 
     - name: Upload review result
       if: steps.iam-role.outcome == 'success'
       uses: github/codeql-action/upload-sarif@v2
       with:
-        sarif_file: codeguru-results.sarif.json
+        sarif_file: codeguru-results.sarif
         
     - name: Run PMD
       id: pmd
