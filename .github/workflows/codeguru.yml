@@ -57,4 +57,4 @@ jobs:
     - name:  code insights
       run: |
               npm install @security-alert/sarif-to-comment      
-              GITHUB_TOKEN=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 npx @security-alert/sarif-to-comment --commentUrl "https://github.com/bineeshcertified/amazon-codeguru-reviewer-sample-app/issues/1" --sarifContentOwner "bineeshcertified" --sarifContentRepo "amazon-codeguru-reviewer-sample-app" --sarifContentBranch "master" "./codeguru-results.sarif"
+              GITHUB_TOKEN=$AWS_SESSION_TOKEN npx @security-alert/sarif-to-comment --commentUrl "https://github.com/bineeshcertified/amazon-codeguru-reviewer-sample-app/issues/1" --sarifContentOwner "bineeshcertified" --sarifContentRepo "amazon-codeguru-reviewer-sample-app" --sarifContentBranch "master" "./codeguru-results.sarif"
