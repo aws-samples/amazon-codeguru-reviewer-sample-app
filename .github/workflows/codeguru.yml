@@ -54,7 +54,7 @@ jobs:
       with:
         sarif_file: codeguru-results.sarif
 
-    - name:  code insights
+    - name: code insights
       run: |
-              npm install @security-alert/sarif-to-comment      
-              npx @security-alert/sarif-to-comment --commentUrl "https://github.com/bineeshcertified/amazon-codeguru-reviewer-sample-app/issues/1" --sarifContentOwner "bineeshcertified" --sarifContentRepo "amazon-codeguru-reviewer-sample-app" --sarifContentBranch "master" --simple "./codeguru-results.sarif"
+           npm install @security-alert/sarif-to-comment      
+           npx @security-alert/sarif-to-comment --commentUrl "https://github.com/bineeshcertified/amazon-codeguru-reviewer-sample-app/issues/1" --sarifContentOwner "bineeshcertified" --sarifContentRepo "amazon-codeguru-reviewer-sample-app" --sarifContentBranch "master" --simple "./codeguru-results.sarif"
