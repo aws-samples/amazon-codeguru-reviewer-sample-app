@@ -59,4 +59,4 @@ jobs:
            npm install @security-alert/sarif-to-comment   
            pwd
            ls -l   
-           npx @security-alert/sarif-to-comment --commentUrl "https://github.com/bineeshcertified/amazon-codeguru-reviewer-sample-app/issues/1" --sarifContentOwner "bineeshcertified" --sarifContentRepo "amazon-codeguru-reviewer-sample-app" --sarifContentBranch "master" --simple "codeguru-results.sarif"
+           npx @security-alert/sarif-to-comment --commentUrl '"https://github.com/bineeshcertified/amazon-codeguru-reviewer-sample-app/issues/1" --sarifContentOwner "bineeshcertified" --sarifContentRepo "amazon-codeguru-reviewer-sample-app" --sarifContentBranch "master" --simple "codeguru-results.sarif"
