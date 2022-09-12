@@ -61,4 +61,4 @@ jobs:
            ls -l   
            url="https://github.com/bineeshcertified/amazon-codeguru-reviewer-sample-app/issues/1"
            echo $url
-           npx @security-alert/sarif-to-comment --commentUrl "$url" --sarifContentOwner "bineeshcertified" --sarifContentRepo "amazon-codeguru-reviewer-sample-app" --sarifContentBranch "master" --simple "codeguru-results.sarif"
+           GITHUB_TOKEN=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 npx @security-alert/sarif-to-comment --commentUrl "$url" --sarifContentOwner "bineeshcertified" --sarifContentRepo "amazon-codeguru-reviewer-sample-app" --sarifContentBranch "master" --simple "codeguru-results.sarif"
