@@ -56,16 +56,5 @@ jobs:
 
     - name:  code insights
       run: |
-           chmod 777 ../upload.sh
-           ../upload.sh codeguru-results.sarif       
-    - name: Run PMD
-      id: pmd
-      uses: pmd/pmd-github-action@v1
-      with:
-        rulesets: 'rulesets/java/quickstart.xml'
-        sourcePath: 'src/main/java'
-        analyzeModifiedFilesOnly: false
-    - name: Upload SARIF file
-      uses: github/codeql-action/upload-sarif@v2
-      with:
-        sarif_file: pmd-report.sarif        
+              npm install @security-alert/sarif-to-comment      
+              GITHUB_TOKEN=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 npx @security-alert/sarif-to-comment --commentUrl "https://github.com/bineeshcertified/amazon-codeguru-reviewer-sample-app/issues/1" --sarifContentOwner "bineeshcertified" --sarifContentRepo "amazon-codeguru-reviewer-sample-app" --sarifContentBranch "master" "./codeguru-results.sarif"
