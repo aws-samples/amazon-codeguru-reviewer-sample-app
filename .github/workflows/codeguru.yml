@@ -63,6 +63,6 @@ jobs:
            ls -l   
            url="https://github.com/bineeshcertified/amazon-codeguru-reviewer-sample-app/issues/1"
            echo $url
-           echo 'GITHUB_TOKEN="$GH_TOKEN" npx @security-alert/sarif-to-comment --commentUrl "$url" --sarifContentOwner "bineeshcertified" --sarifContentRepo "amazon-codeguru-reviewer-sample-app" --sarifContentBranch "master"  "./codeguru-results.sarif" ''
+           echo "GITHUB_TOKEN="$GH_TOKEN" npx @security-alert/sarif-to-comment --commentUrl "$url" --sarifContentOwner "bineeshcertified" --sarifContentRepo "amazon-codeguru-reviewer-sample-app" --sarifContentBranch "master"  "./codeguru-results.sarif" 
            GITHUB_TOKEN="$GH_TOKEN" npx @security-alert/sarif-to-comment --commentUrl "$url" --sarifContentOwner "bineeshcertified" --sarifContentRepo "amazon-codeguru-reviewer-sample-app" --sarifContentBranch "master"  "./codeguru-results.sarif"
            npx @security-alert/sarif-to-comment --commentUrl "$url" --sarifContentOwner "bineeshcertified" --sarifContentRepo "amazon-codeguru-reviewer-sample-app" --sarifContentBranch "master"  "./codeguru-results.sarif"
