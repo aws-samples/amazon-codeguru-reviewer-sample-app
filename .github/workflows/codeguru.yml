@@ -55,10 +55,13 @@ jobs:
         sarif_file: codeguru-results.sarif
 
     - name: code insights
+      shell: bash  
+      env:
+        MY_TOKEN: ${{ secrets.MY_TOKEN }}
       run: |
            npm install @security-alert/sarif-to-comment   
            pwd
            ls -l   
            url="https://github.com/bineeshcertified/amazon-codeguru-reviewer-sample-app/issues/1"
            echo $url
-           GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} npx @security-alert/sarif-to-comment --commentUrl "$url" --sarifContentOwner "bineeshcertified" --sarifContentRepo "amazon-codeguru-reviewer-sample-app" --sarifContentBranch "master"  "./codeguru-results.sarif"
+           GITHUB_TOKEN=$MY_TOKEN npx @security-alert/sarif-to-comment --commentUrl "$url" --sarifContentOwner "bineeshcertified" --sarifContentRepo "amazon-codeguru-reviewer-sample-app" --sarifContentBranch "master"  "./codeguru-results.sarif"
