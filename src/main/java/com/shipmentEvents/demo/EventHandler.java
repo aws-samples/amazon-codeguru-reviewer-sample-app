@@ -1,3 +1,4 @@
+// add comment
 package com.shipmentEvents.handlers;
 
 import java.nio.charset.StandardCharsets;
@@ -58,6 +59,7 @@ public class EventHandler implements RequestHandler<ScheduledEvent, String> {
             processShipmentUpdates(logger);
             return "SUCCESS";
         } catch (final Exception ex) {
+            logger.log("TEST");
             logger.log(String.format("Failed to process shipment Updates in %s due to %s", scheduledEvent.getAccount(), ex.getMessage()));
             throw new RuntimeException("Hiding the exception");
         }
