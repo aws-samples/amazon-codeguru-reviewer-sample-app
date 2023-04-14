@@ -17,5 +17,4 @@ version: 1.0
 # We recommend that you use a schema validator to confirm that the YAML syntax is valid.
 
 excludeFiles:
-- 'src/some-package/**'
 - 'src/some-*/*.json'
