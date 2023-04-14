@@ -1,0 +1,43 @@
+image: maven:latest
+
+stages:
+  - build
+  - test
+
+build:
+  stage: build
+  script:
+    - mvn package
+  artifacts:
+    paths:
+      - target/
+
+codeguru-reviewer:
+  dependencies:
+    - build
+  variables:
+    src_root: src/main/java
+    build_root: target
+  image:
+    name: amazon/aws-cli:latest
+    entrypoint: [""]
+  before_script:
+    - yum install -y zip jq git
+    ##
+    ## setting up private beta access ssh key
+    ## https://docs.gitlab.com/ee/ci/ssh_keys/
+    ##
+    - eval $(ssh-agent -s)
+    - echo "$SSH_KEY" | tr -d '\r' | ssh-add -
+' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan github.com >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+  script:
+    - git clone git@github.com:aws-actions/codeguru-reviewer.git
+    - codeguru-reviewer/entrypoint.sh
+  artifacts:
+    reports:
+      sast: codeguru-results.sast.json 
+

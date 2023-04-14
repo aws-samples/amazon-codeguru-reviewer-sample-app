@@ -80,6 +80,7 @@ public class EventHandler implements RequestHandler<ScheduledEvent, String> {
 
     private void processShipmentUpdates(final LambdaLogger logger) throws InterruptedException {
 
+	System.out.println("Hi");
         final List<String> bucketsToProcess = Constants.BUCKETS_TO_PROCESS;
         final Map<String, Pair<Long, String>> latestStatusForTrackingNumber = new HashMap<String, Pair<Long, String>>();
         final Map<String, List<KeyVersion>> filesToDelete = new HashMap<String, List<DeleteObjectsRequest.KeyVersion>>(); 
