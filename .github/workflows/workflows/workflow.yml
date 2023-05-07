@@ -1,0 +1,44 @@
+name: Java ci with reviewborad
+
+on: 
+  push: 
+    branches: [main]
+  pull_request: 
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secrete-key-id: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    - name: Set up JDK
+      uses: actions/setup-java@v1
+      with:
+        java-version: 1.8
+    
+    - name: build with maven
+      run: mvn -B package --file pom.xml
+
+    - name: Codeguru Reviewer
+      uses: aws-actions/codeguru-reviewer@v1.1
+      with:
+        build_path: target
+        s3_bucket: qporfiles-code-review
+
+    - name: Upload review results
+      if: ${{ github.event_name != 'push' }}
+      uses: github/codeql-action/upload-sarif@v1
+      with:
+        sarif_file: codeguru-results.sarif.json
