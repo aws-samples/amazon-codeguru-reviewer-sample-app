@@ -27,7 +27,7 @@ jobs:
     
     # Step 2: Add CodeGuru Reviewer Action
     - name: CodeGuru Reviewer
-      uses: aws-actions/codeguru-reviewer@v1
+      uses: aws-actions/codeguru-reviewer@v1.1
       with:
         build_path: target # build artifact(s) directory
         s3_bucket: codeguru-reviewer-qprofiles-target  # S3 Bucket with "codeguru-reviewer-*" prefix
