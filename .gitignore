@@ -7,3 +7,5 @@ dependency-reduced-pom.xml
 .classpath
 .project
 .settings
+build.toml
+buildoutput

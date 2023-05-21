@@ -1,0 +1,11 @@
+{
+    "name": "lambdaauthorizer",
+    "version": "1.0.0",
+    "description": "Authorizer for API Gateway",
+    "main": "app.js",
+    "author": "SAM CLI",
+    "license": "MIT-0",
+    "devDependencies": {
+      "prettier": "2.7.1"
+    }
+  }

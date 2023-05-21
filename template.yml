@@ -1,1 +1,221 @@
 # Cloudformation for deploying all the solution
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Parameters:
+  PublishingAliasName:
+    Type: String
+    Default: current
+    Description: The alias used for Publishing
+  StageName:
+    Type: String
+    Default: prod
+    Description: The Lambda Function and API Gateway Stage
+  FunctionName:
+    Type: String
+    Default: CodeGuruLambda
+    Description: The Lambda Function Name
+
+Description: 
+  Api Gateway and Lambda connected to CodeGuru Reviewer and Profiler
+
+Globals:
+  Function:
+    Timeout: 3
+
+Resources:
+  LambdaAuthorizer:
+    Type: AWS::Serverless::Function
+    Properties:
+      AutoPublishAlias: current
+      CodeUri: LambdaAuthorizer/
+      Handler: app.handler
+      Role: !GetAtt LambdaSMAndExecutionRole.Arn
+      Runtime: nodejs16.x
+      FunctionName: LambdaAuthorizer
+      
+  ProxyLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      AutoPublishAlias: !Ref PublishingAliasName
+      CodeUri: .
+      Handler: com.shipmentEvents.handlers.EventHandler::handleRequest
+      Runtime: java17
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+        Variables:
+          PARAM1: VALUE
+          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1 # More info about tiered compilation https://aws.amazon.com/blogs/compute/optimizing-aws-lambda-function-performance-for-java/
+      FunctionName: !Ref FunctionName
+      Events:
+        RestAPIGateway:
+          Type: Api
+          Properties:
+            Path: /CallLambdaForCodeGuru
+            Method: Get
+            RestApiId: !Ref RestAPIGateway
+
+  ApiAccessLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/apigateway/${RestAPIGateway}
+      RetentionInDays: 7
+
+  ApiCWLRoleArn:
+    Type: AWS::ApiGateway::Account
+    Properties:
+      CloudWatchRoleArn: !GetAtt CloudWatchRole.Arn
+
+  CloudWatchRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          Action: "sts:AssumeRole"
+          Effect: Allow
+          Principal:
+            Service: apigateway.amazonaws.com
+      Path: /
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+
+  LambdaCodeGuruProfilerExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+
+  LambdaSMAndExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Path: "/"
+      Policies:
+      - PolicyName: root
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - logs:*
+            Resource: arn:aws:logs:*:*:*
+      - PolicyName: AllowSM
+        PolicyDocument: 
+            Version: '2012-10-17'
+            Statement: 
+              - Effect: Allow
+                Action: 
+                - secretsmanager:GetSecretValue
+                Resource: !Ref PrivateAuthenticationToken
+
+  PrivateAuthenticationToken:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: API Key
+      Name: AuthorizationToken
+      GenerateSecretString:
+        PasswordLength: 30
+        ExcludePunctuation: True
+        GenerateStringKey: apiKey
+        SecretStringTemplate: !Sub "{}"
+
+  RestAPIGateway:
+    Type: "AWS::Serverless::Api"
+    Properties:
+      Auth:
+        DefaultAuthorizer: MyLambdaRequestAuthorizer
+        Authorizers:
+          MyLambdaRequestAuthorizer:
+            FunctionPayloadType: REQUEST
+            FunctionArn: !GetAtt LambdaAuthorizer.Arn
+            Identity:
+              Headers:
+                - AuthorizationToken
+      EndpointConfiguration:
+        Type: REGIONAL
+      StageName: !Ref StageName
+      AccessLogSetting:
+        DestinationArn: !Sub ${ApiAccessLogGroup.Arn}
+        Format: "{ 'requestId':'$context.requestId', 'ip': '$context.identity.sourceIp', 'apiId':'$context.apiId', 'DomainName':'$context.domainName','requestTime':'$context.requestTime','httpMethod':'$context.httpMethod','resourcePath':'$context.resourcePath', 'status':'$context.status','protocol':'$context.protocol', 'responseLength':'$context.responseLength','error':'$context.error.message','stage':'$context.stage'}"
+      MethodSettings:
+        - MetricsEnabled: True
+          ResourcePath: "/*"
+          HttpMethod: "*"
+
+      DefinitionBody:
+        swagger: 2.0
+        x-amazon-apigateway-request-validators:
+          basic:
+            validateRequestBody: true
+            validateRequestParameters: true
+        info:
+          title: !Sub API-${FunctionName}-${StageName}
+        components:
+          schemas:
+            Empty:
+              title: "Empty Schema"
+              type: "object"
+        paths:
+          /calllambdaforcodeguru/{id}:
+              get:
+                produces:
+                - "application/json"
+                parameters:
+                - name: "id"
+                  in: "path"
+                  required: true
+                  type: "string"
+                responses:
+                  "200":
+                    description: "200 response"
+                    schema:
+                      $ref: "#/definitions/Empty"
+                x-amazon-apigateway-request-validator: "basic"
+                x-amazon-apigateway-integration:
+                  uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ProxyLambda.Arn}:${PublishingAliasName}/invocations"
+                  passthroughBehavior: when_no_templates
+                  httpMethod: GET
+                  type: aws
+                  contentHandling: "CONVERT_TO_TEXT"
+                  requestTemplates:
+                    application/json:
+                      "{\"headers\": {\"Content-Type\": \"application/json\",\"AuthorizationToken\": \"$method.request.header.AuthorizationToken\"}}\r\n"
+        definitions:
+          Empty:
+            type: "object"
+            title: "Empty Schema"
+
+MyProfilingGroupWithAgentPermissions:
+  Type: AWS::CodeGuruProfiler::ProfilingGroup
+  Properties:
+    ProfilingGroupName: "CodGuruProfilingGroup"
+    AgentPermissions:
+      Principals:
+        - !GetAtt LambdaSMAndExecutionRole.arn
+    ComputePlatform: "AWSLambda"
+
+Outputs:
+  APIUrlOutput:
+    Value:
+      !Join [
+        "/",
+        [
+          !Sub "https://${RestAPIGateway}.execute-api.${AWS::Region}.amazonaws.com/${StageName}",
+          "CodeGuruLambda",
+        ],
+      ]
