@@ -38,6 +38,7 @@ Resources:
     Properties:
       AutoPublishAlias: !Ref PublishingAliasName
       CodeUri: .
+      Role: !GetAtt LambdaCodeGuruProfilerExecutionRole.Arn
       Handler: com.shipmentEvents.handlers.EventHandler::handleRequest
       Runtime: java17
       Architectures:
@@ -90,7 +91,21 @@ Resources:
         - Effect: Allow
           Principal:
             Service:
-            - lambda.amazonaws.com
+              - lambda.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Path: "/"
+      Policies:
+      - PolicyName: AmazonCodeGuruProfilerAgentAccessPolicy
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - codeguru-profiler:ConfigureAgent,
+              codeguru-profiler:CreateProfilingGroup,
+              codeguru-profiler:PostAgentProfile
+            Resource: arn:aws:codeguru-profiler:*:*:profilingGroup/CodGuruProfilingGroup
 
   LambdaSMAndExecutionRole:
     Type: AWS::IAM::Role
@@ -206,7 +221,7 @@ MyProfilingGroupWithAgentPermissions:
     ProfilingGroupName: "CodGuruProfilingGroup"
     AgentPermissions:
       Principals:
-        - !GetAtt LambdaSMAndExecutionRole.arn
+        - !GetAtt LambdaCodeGuruProfilerExecutionRole.Arn
     ComputePlatform: "AWSLambda"
 
 Outputs:
