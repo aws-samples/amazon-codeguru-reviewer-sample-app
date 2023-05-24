@@ -33,7 +33,7 @@ jobs:
         java-version: 1.8
     - name: Build project
       if: steps.iam-role.outcome == 'success'
-      run: mvn compile -DskipTests
+      run: ./gradlew assemble
 
     - name: CodeGuru Reviewer
       uses: aws-actions/codeguru-reviewer@v1.1
@@ -41,7 +41,7 @@ jobs:
       continue-on-error: false
       with:          
         s3_bucket: codeguru-reviewer-github-profiler-demo-048169001733-uw2
-        build_path: ./target/classes
+        build_path: ./build/classes/java/main
 
     - name: Store SARIF file
       if: steps.iam-role.outcome == 'success'
