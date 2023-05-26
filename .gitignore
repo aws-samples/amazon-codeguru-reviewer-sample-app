@@ -9,3 +9,4 @@ dependency-reduced-pom.xml
 .settings
 build.toml
 buildoutput
+.aws-sam

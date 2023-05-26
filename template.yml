@@ -88,24 +88,13 @@ Resources:
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
-        - Effect: Allow
+          Action: "sts:AssumeRole"
+          Effect: Allow
           Principal:
-            Service:
-              - lambda.amazonaws.com
-          Action:
-          - sts:AssumeRole
-      Path: "/"
-      Policies:
-      - PolicyName: AmazonCodeGuruProfilerAgentAccessPolicy
-        PolicyDocument:
-          Version: '2012-10-17'
-          Statement:
-          - Effect: Allow
-            Action:
-            - codeguru-profiler:ConfigureAgent,
-              codeguru-profiler:CreateProfilingGroup,
-              codeguru-profiler:PostAgentProfile
-            Resource: arn:aws:codeguru-profiler:*:*:profilingGroup/CodGuruProfilingGroup
+            Service: lambda.amazonaws.com
+      Path: /
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/AmazonCodeGuruProfilerAgentAccess"
 
   LambdaSMAndExecutionRole:
     Type: AWS::IAM::Role
@@ -215,14 +204,11 @@ Resources:
             type: "object"
             title: "Empty Schema"
 
-MyProfilingGroupWithAgentPermissions:
-  Type: AWS::CodeGuruProfiler::ProfilingGroup
-  Properties:
-    ProfilingGroupName: "CodGuruProfilingGroup"
-    AgentPermissions:
-      Principals:
-        - !GetAtt LambdaCodeGuruProfilerExecutionRole.Arn
-    ComputePlatform: "AWSLambda"
+  MyProfilingGroupWithAgentPermissions:
+    Type: AWS::CodeGuruProfiler::ProfilingGroup
+    Properties:
+      ComputePlatform: "AWSLambda"
+      ProfilingGroupName: "CodGuruProfilingGroup"
 
 Outputs:
   APIUrlOutput:
