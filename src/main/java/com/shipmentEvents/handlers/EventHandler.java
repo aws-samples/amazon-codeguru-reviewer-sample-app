@@ -1,5 +1,6 @@
-package codegurupackage;
+package com.shipmentEvents.handlers;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -17,7 +18,8 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
-import com.amazonaws.services.lambda.runtime.events.ScheduledEvent;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest;
@@ -32,35 +34,62 @@ import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 
-public class EventHandler implements RequestHandler<ScheduledEvent, String> {
+public class EventHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
-    /**
-     * Shipment events for a carrier are uploaded to separate S3 buckets based on the source of events. E.g., events originating from
-     * the hand-held scanner are stored in a separate bucket than the ones from mobile App. The Lambda processes events from multiple
-     * sources and updates the latest status of the package in a summary S3 bucket every 15 minutes.
-     * 
-     * The events are stored in following format:
-     * - Each status update is a file, where the name of the file is tracking number + random id.
-     * - Each file has status and time-stamp as the first 2 lines respectively.
-     * - The time at which the file is stored in S3 is not an indication of the time-stamp of the event.
-     * - Once the status is marked as DELIVERED, we can stop tracking the package.
-     * 
-     * A Sample files looks as below:
-     *  FILE-NAME-> '8787323232232332--55322798-dd29-4a04-97f4-93e18feed554'
-     *   >status:IN TRANSIT
-     *   >timestamp: 1573410202
-     *   >Other fields like...tracking history and address
-     */
-    public String handleRequest(ScheduledEvent scheduledEvent, Context context) {
+    public APIGatewayProxyResponseEvent handleRequest(final APIGatewayProxyRequestEvent input, final Context context) {       
+        //create tracking mechanism of errors:
+        Boolean NoError = true;
 
         final LambdaLogger logger = context.getLogger();
+
         try {
+            //Now depends on the value of the API we will do one thing or others, let's get the API values:
+            String BodyOfAPI = input.getBody();
+
+            //extract the values:
+            
             processShipmentUpdates(logger);
-            return "SUCCESS";
+
         } catch (final Exception ex) {
-            logger.log(String.format("Failed to process shipment Updates in %s due to %s", scheduledEvent.getAccount(), ex.getMessage()));
-            throw new RuntimeException("Hiding the exception");
+            
+            //get the account id:
+            String accountid = context.getInvokedFunctionArn().split(":")[4];
+
+            //pass the error to the logger
+            logger.log(String.format("Failed to process shipment Updates in %s due to %s",accountid, ex.getMessage()));
+
+            //pass the error:
+            NoError=false;
         }
+
+        //return at the end:
+        return CreateAPIGatewayMessage(NoError);
+    }
+
+    private APIGatewayProxyResponseEvent CreateAPIGatewayMessage(Boolean NoError)
+    {
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Content-Type", "application/json");
+        headers.put("X-Custom-Header", "application/json");
+
+        APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent()
+                 .withHeaders(headers);
+        
+           if(NoError)
+           {
+                String output = "{ \"message\": \"Action Completed\"}";
+
+                return response
+                    .withStatusCode(200)
+                    .withBody(output);
+
+           } 
+           else
+           {
+                return response
+                    .withBody("{}")
+                    .withStatusCode(500);
+           }
     }
 
     public String weakMessageEncryption(String message, String key) throws Exception {

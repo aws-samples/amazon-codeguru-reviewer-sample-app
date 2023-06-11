@@ -33,7 +33,7 @@ Resources:
       Runtime: nodejs16.x
       FunctionName: LambdaAuthorizer
       
-  ProxyLambda:
+  CodeGuruLambda:
     Type: AWS::Serverless::Function
     Properties:
       AutoPublishAlias: !Ref PublishingAliasName
@@ -54,7 +54,7 @@ Resources:
           Type: Api
           Properties:
             Path: /CallLambdaForCodeGuru
-            Method: Get
+            Method: Post
             RestApiId: !Ref RestAPIGateway
 
   ApiAccessLogGroup:
@@ -176,7 +176,7 @@ Resources:
               type: "object"
         paths:
           /calllambdaforcodeguru/{id}:
-              get:
+              post:
                 produces:
                 - "application/json"
                 parameters:
@@ -191,9 +191,9 @@ Resources:
                       $ref: "#/definitions/Empty"
                 x-amazon-apigateway-request-validator: "basic"
                 x-amazon-apigateway-integration:
-                  uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ProxyLambda.Arn}:${PublishingAliasName}/invocations"
+                  uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CodeGuruLambda.Arn}:${PublishingAliasName}/invocations"
                   passthroughBehavior: when_no_templates
-                  httpMethod: GET
+                  httpMethod: POST
                   type: aws
                   contentHandling: "CONVERT_TO_TEXT"
                   requestTemplates:
