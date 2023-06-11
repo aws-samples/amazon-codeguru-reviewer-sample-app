@@ -209,6 +209,8 @@ Resources:
     Properties:
       ComputePlatform: "AWSLambda"
       ProfilingGroupName: "CodGuruProfilingGroup"
+      AgentPermissions:
+        Principals: !GetAtt LambdaCodeGuruProfilerExecutionRole.Arn
 
 Outputs:
   APIUrlOutput:

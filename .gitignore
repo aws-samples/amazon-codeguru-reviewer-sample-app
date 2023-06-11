@@ -10,3 +10,5 @@ dependency-reduced-pom.xml
 build.toml
 buildoutput
 .aws-sam
+.gradle
+test/
