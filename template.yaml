@@ -40,7 +40,7 @@ Resources:
       CodeUri: .
       Role: !GetAtt LambdaCodeGuruProfilerExecutionRole.Arn
       Handler: com.shipmentEvents.handlers.EventHandler::handleRequest
-      Runtime: java17
+      Runtime: java11
       Architectures:
         - x86_64
       MemorySize: 512
@@ -54,7 +54,7 @@ Resources:
           Type: Api
           Properties:
             Path: /CallLambdaForCodeGuru
-            Method: Post
+            Method: Get
             RestApiId: !Ref RestAPIGateway
 
   ApiAccessLogGroup:
@@ -176,7 +176,7 @@ Resources:
               type: "object"
         paths:
           /calllambdaforcodeguru/{id}:
-              post:
+              get:
                 produces:
                 - "application/json"
                 parameters:
@@ -193,7 +193,7 @@ Resources:
                 x-amazon-apigateway-integration:
                   uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CodeGuruLambda.Arn}:${PublishingAliasName}/invocations"
                   passthroughBehavior: when_no_templates
-                  httpMethod: POST
+                  httpMethod: GET
                   type: aws
                   contentHandling: "CONVERT_TO_TEXT"
                   requestTemplates:
