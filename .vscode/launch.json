@@ -3,21 +3,20 @@
         {
             "type": "aws-sam",
             "request": "direct-invoke",
-            "name": "API CodeGuru Lambda Local Debugging",
+            "name": "API amazon-codeguru-reviewer-sample-app:CodeGuruLambda",
             "invokeTarget": {
                 "target": "api",
                 "templatePath": "${workspaceFolder}/template.yaml",
                 "logicalId": "CodeGuruLambda"
             },
             "api": {
-                "path": "/CallLambdaForCodeGuru/1",
-                "httpMethod": "get",
+                "path": "/CallLambdaForCodeGuru",
+                "httpMethod": "Post",
                 "payload": {
-                    "json": {}
+                    "json": {
+                        "operations":"Run Profiler"
+                    }
                 }
-            },
-            "lambda": {
-                "runtime": "java11"
             }
         }
     ]

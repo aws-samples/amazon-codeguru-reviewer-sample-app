@@ -54,7 +54,7 @@ Resources:
           Type: Api
           Properties:
             Path: /CallLambdaForCodeGuru
-            Method: Get
+            Method: Post
             RestApiId: !Ref RestAPIGateway
 
   ApiAccessLogGroup:
@@ -141,15 +141,15 @@ Resources:
   RestAPIGateway:
     Type: "AWS::Serverless::Api"
     Properties:
-      Auth:
-        DefaultAuthorizer: MyLambdaRequestAuthorizer
-        Authorizers:
-          MyLambdaRequestAuthorizer:
-            FunctionPayloadType: REQUEST
-            FunctionArn: !GetAtt LambdaAuthorizer.Arn
-            Identity:
-              Headers:
-                - AuthorizationToken
+      # Auth:
+      #   DefaultAuthorizer: MyLambdaRequestAuthorizer
+      #   Authorizers:
+      #     MyLambdaRequestAuthorizer:
+      #       FunctionPayloadType: REQUEST
+      #       FunctionArn: !GetAtt LambdaAuthorizer.Arn
+      #       Identity:
+      #         Headers:
+      #           - AuthorizationToken
       EndpointConfiguration:
         Type: REGIONAL
       StageName: !Ref StageName
@@ -162,7 +162,7 @@ Resources:
           HttpMethod: "*"
 
       DefinitionBody:
-        swagger: 2.0
+        swagger: "2.0"
         x-amazon-apigateway-request-validators:
           basic:
             validateRequestBody: true
@@ -175,15 +175,10 @@ Resources:
               title: "Empty Schema"
               type: "object"
         paths:
-          /calllambdaforcodeguru/{id}:
-              get:
+          /CallLambdaForCodeGuru:
+              post:
                 produces:
                 - "application/json"
-                parameters:
-                - name: "id"
-                  in: "path"
-                  required: true
-                  type: "string"
                 responses:
                   "200":
                     description: "200 response"
@@ -193,7 +188,7 @@ Resources:
                 x-amazon-apigateway-integration:
                   uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CodeGuruLambda.Arn}:${PublishingAliasName}/invocations"
                   passthroughBehavior: when_no_templates
-                  httpMethod: GET
+                  httpMethod: POST
                   type: aws
                   contentHandling: "CONVERT_TO_TEXT"
                   requestTemplates:
