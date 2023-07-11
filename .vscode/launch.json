@@ -14,7 +14,8 @@
                 "httpMethod": "Post",
                 "payload": {
                     "json": {
-                        "operations":"Run Profiler"
+                        "operations":"Profiler",
+                        "Number of loops": 3
                     }
                 }
             }

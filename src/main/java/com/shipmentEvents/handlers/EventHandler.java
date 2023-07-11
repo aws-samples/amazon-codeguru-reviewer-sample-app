@@ -31,6 +31,7 @@ import com.shopify.model.ShopifyShop;
 
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.json.JSONObject;
 
 
 public class EventHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
@@ -46,8 +47,14 @@ public class EventHandler implements RequestHandler<APIGatewayProxyRequestEvent,
             String BodyOfAPI = input.getBody();
 
             //extract the values:
+            JSONObject obj = new JSONObject(BodyOfAPI);
+
+            //get the number of times repeat this exercise
+            int numberofloops = Integer.parseInt(obj.getString("Number of loops"));
             
-            processShipmentUpdates(logger);
+            for (int i = 0; i < numberofloops; i++) {
+                processShipmentUpdates(logger);    
+            }
 
         } catch (final Exception ex) {
             

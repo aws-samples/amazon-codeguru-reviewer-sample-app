@@ -14,6 +14,18 @@ Parameters:
     Type: String
     Default: CodeGuruLambda
     Description: The Lambda Function Name
+  BucketNameEventsScanner:
+    Type: String
+    Default: !Join ['-', ['my-s3-bucketname-eventscanner', !Select [4, !Split ['-', !Select [2, !Split ['/', !Ref AWS::StackId]]]]]]
+    Description: Bucket name for the events scanner
+  BucketNameMobileApp:
+    Type: String
+    Default: !Join ['-', ['my-s3-bucketname-mobileapp', !Select [4, !Split ['-', !Select [2, !Split ['/', !Ref AWS::StackId]]]]]]
+    Description: Bucket name for the events mobileapp
+  BucketNameMobileApp:
+    Type: String
+    Default: !Join ['-', ['my-s3-bucketname-summary', !Select [4, !Split ['-', !Select [2, !Split ['/', !Ref AWS::StackId]]]]]]
+    Description: Bucket name for the events summary
 
 Description: 
   Api Gateway and Lambda connected to CodeGuru Reviewer and Profiler
@@ -22,7 +34,6 @@ Globals:
   Function:
     Timeout: 3
 
-Resources:
   LambdaAuthorizer:
     Type: AWS::Serverless::Function
     Properties:
