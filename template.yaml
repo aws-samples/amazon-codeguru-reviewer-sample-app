@@ -22,7 +22,7 @@ Parameters:
     Type: String
     Default: !Join ['-', ['my-s3-bucketname-mobileapp', !Select [4, !Split ['-', !Select [2, !Split ['/', !Ref AWS::StackId]]]]]]
     Description: Bucket name for the events mobileapp
-  BucketNameMobileApp:
+  BucketNameSummary:
     Type: String
     Default: !Join ['-', ['my-s3-bucketname-summary', !Select [4, !Split ['-', !Select [2, !Split ['/', !Ref AWS::StackId]]]]]]
     Description: Bucket name for the events summary
