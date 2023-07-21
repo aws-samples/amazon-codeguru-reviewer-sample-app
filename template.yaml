@@ -35,6 +35,7 @@ Globals:
   Function:
     Timeout: 3
 
+Resources: 
   LambdaAuthorizer:
     Type: AWS::Serverless::Function
     Properties:
