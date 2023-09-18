@@ -191,5 +191,3 @@ public class EventHandler implements RequestHandler<ScheduledEvent, String> {
     
     
 }
-
-
