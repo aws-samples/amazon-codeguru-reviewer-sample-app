@@ -86,6 +86,8 @@ public class EventHandler implements RequestHandler<ScheduledEvent, String> {
         return shopifySdk.getShop();
     }
 
+    //test
+
     private void processShipmentUpdates(final LambdaLogger logger) throws InterruptedException {
 
         final List<String> bucketsToProcess = Constants.BUCKETS_TO_PROCESS;
