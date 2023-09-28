@@ -30,6 +30,7 @@ import com.shopify.model.ShopifyShop;
 
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import junit.framework.Test;
 
 
 public class EventHandler implements RequestHandler<ScheduledEvent, String> {
@@ -60,6 +61,13 @@ public class EventHandler implements RequestHandler<ScheduledEvent, String> {
         } catch (final Exception ex) {
             logger.log(String.format("Failed to process shipment Updates in %s due to %s", scheduledEvent.getAccount(), ex.getMessage()));
             throw new RuntimeException("Hiding the exception");
+        }
+    }
+
+    // create a function that counts to 10
+    public void countToTen() {
+        for (int i = 0; i < 10; i++) {
+            System.out.println(i);
         }
     }
 
@@ -171,6 +179,7 @@ public class EventHandler implements RequestHandler<ScheduledEvent, String> {
           s3Client.deleteObjects(deleteRequest);
       }
     }
+
     
     private boolean isValidFile(String fileContents) {
         if (!fileContents.contains("\n")) {
