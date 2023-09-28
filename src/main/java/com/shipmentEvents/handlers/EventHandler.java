@@ -71,6 +71,13 @@ public class EventHandler implements RequestHandler<ScheduledEvent, String> {
         }
     }
 
+    // create a function that has weak Security
+    public String weakEncryption(String message) throws Exception {
+        Cipher cipher = Cipher.getInstance("RSA");
+        cipher.init(Cipher.ENCRYPT_MODE, Constants.PUBLIC_KEY);
+        return new String(cipher.doFinal(message.getBytes()), StandardCharsets.UTF_8);
+    }
+
     public String weakMessageEncryption(String message, String key) throws Exception {
         Cipher cipher = Cipher.getInstance("RSA");
         SecretKey secretKey = new SecretKeySpec(key.getBytes(), "AES");
