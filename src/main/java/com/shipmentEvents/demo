@@ -30,7 +30,6 @@ import com.shopify.model.ShopifyShop;
 
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import junit.framework.Test;
 
 
 public class EventHandler implements RequestHandler<ScheduledEvent, String> {
@@ -64,20 +63,6 @@ public class EventHandler implements RequestHandler<ScheduledEvent, String> {
         }
     }
 
-    // create a function that counts to 10
-    public void countToTen() {
-        for (int i = 0; i < 10; i++) {
-            System.out.println(i);
-        }
-    }
-
-    // create a function that has weak Security
-    public String weakEncryption(String message) throws Exception {
-        Cipher cipher = Cipher.getInstance("RSA");
-        cipher.init(Cipher.ENCRYPT_MODE, Constants.PUBLIC_KEY);
-        return new String(cipher.doFinal(message.getBytes()), StandardCharsets.UTF_8);
-    }
-
     public String weakMessageEncryption(String message, String key) throws Exception {
         Cipher cipher = Cipher.getInstance("RSA");
         SecretKey secretKey = new SecretKeySpec(key.getBytes(), "AES");
@@ -92,8 +77,6 @@ public class EventHandler implements RequestHandler<ScheduledEvent, String> {
              .withAccessToken(token).build();
         return shopifySdk.getShop();
     }
-
-    //test
 
     private void processShipmentUpdates(final LambdaLogger logger) throws InterruptedException {
 
@@ -188,7 +171,6 @@ public class EventHandler implements RequestHandler<ScheduledEvent, String> {
           s3Client.deleteObjects(deleteRequest);
       }
     }
-
     
     private boolean isValidFile(String fileContents) {
         if (!fileContents.contains("\n")) {
