@@ -1,4 +1,4 @@
-package com.shipmentEvents.handlers;
+package com.shipmentEvents.demo;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
