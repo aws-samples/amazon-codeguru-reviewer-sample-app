@@ -15,10 +15,10 @@ return new class extends Migration
     {
         Schema::create('rlst_buildings', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 100);
-            $table->string('name_e', 100);
-            $table->text('description')->nullable();
-            $table->text('description_e')->nullable();
+            $table->double('name', 100);
+            $table->double('name_e', 100);
+            $table->double('description')->nullable();
+            $table->double('description_e')->nullable();
             $table->double('land_area')->nullable()->default(0);
             $table->double('building_area')->nullable()->default(0)->comment("Building area in Square Meter (<=land area)");
             $table->char('construction_year', 4)->nullable()->default('2018');
