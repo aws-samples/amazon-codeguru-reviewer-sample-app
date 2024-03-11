@@ -2,7 +2,7 @@ name: CodeGuru Workflow
 on:
   push:
     branches:
-      - dev # or the name of your main branch
+      - dev # or the name of your main branch , this can change
 
 jobs:
   deploy:
