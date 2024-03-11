@@ -2,7 +2,7 @@ name: Analyze with CodeGuru Reviewer
 
 on: 
  - push
- - workflow_dispatch # This allows manual triggering of the action through the GitHub UI.
+ - workflow_dispatch # This allows manual triggering of the action through the GitHub UI.No changes Done.
 
 permissions:
     id-token: write
