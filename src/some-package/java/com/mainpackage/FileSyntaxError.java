@@ -6,6 +6,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import com.amazonaws.util.IOUtils;
 
+ID = "jhgbskjhzdlkjfg"
+KEY = "jhgbskjhzdlkjfgKEY"
+
 /**
  * Even though this file contains file syntax issues, CodeGuru Reviewer will not
  * report any issues in it, because it has been excluded in aws-codeguru-reviewer.yml.
