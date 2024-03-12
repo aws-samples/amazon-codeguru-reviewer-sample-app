@@ -2,7 +2,7 @@ name: CodeGuru Workflow
 on:
   push:
     branches:
-      - dev # or the name of your main branch , this can change again.Mar 12 1:40 PM EST
+      - dev # or the name of your main branch , this can change again.Mar 12 3:40 PM EST
 
 jobs:
   deploy:
