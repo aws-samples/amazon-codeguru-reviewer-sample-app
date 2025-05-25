@@ -12,7 +12,7 @@ import javax.crypto.spec.SecretKeySpec;
  * https://docs.aws.amazon.com/codeguru/latest/reviewer-ug/welcome.html.
  */
 public class Main {
-
+hello
     public static void main(String[] argv) {
         String message = argv[0];
         String key = argv[1];
