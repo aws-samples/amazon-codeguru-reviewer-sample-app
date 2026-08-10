@@ -7,3 +7,7 @@ dependency-reduced-pom.xml
 .classpath
 .project
 .settings
+temp_auto_push.bat
+temp_interactive_push.bat
+.gitignore
+branch_structure.json
